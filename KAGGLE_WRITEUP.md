@@ -13,25 +13,23 @@ We built **Semmal (செம்மல்)** to address this. Our motivation was 
 ---
 
 ### Technical Hurdles & Goals
-We aimed to design an asynchronous multi-agent system executing a strict analysis pipeline: `Job Description Extraction -> Vector DB Staging -> Ethics Auditing -> Preparation Generation`.
+We aimed to design a highly parallel, asynchronous multi-agent pipeline executing: `JD Extraction -> Vector DB Staging -> Ethics Auditing -> Preparation Generation`.
 
-During development, several critical tasks and system failures had to be resolved:
-* **Unicode Processing Issues:** Scripts crashed with `UnicodeEncodeError` when trying to print output indicators (`✅` / `❌`) on Windows terminals operating under default encodings (like `cp1252`).
-* **Hanging Automated Test Suites:** The pytest discovery suite would hang indefinitely. This occurred because multiple `test_*.py` files executed global database connections and network searches on import rather than isolating them within run scopes.
-* **Workspace Cleanliness:** Nested tracking folders (`.git`) in the repository structure blocked standard unified version control.
+During development, we faced several engineering hurdles:
+* **LLM API Concurrency Rate Limits (429 Errors):** Concurrently evaluating batches of resume texts caused rapid spikes in requests, triggering immediate API rate-limit errors and disrupting the pipeline.
+* **Structured Output Schema Breaches:** LLMs frequently formatted JSON objects incorrectly, wrapped outputs in markdown code blocks, or returned incomplete schemas, causing parser crashes during backend ingestion.
+* **Concurrency Deadlocks & Connection Timeouts:** Offloading ratings and interview plans to our PostgreSQL database concurrently resulted in connection timeouts and transactional deadlocks on Neon.
+* **Cross-Candidate Context Leakage:** Managing multiple candidate resume texts inside a unified Vector database environment posed risk of retrieval interference and data leakages.
 
 ---
 
 ### System Design & Implementation
-To achieve our goals, we implemented the following strategies:
-* **Encoding Optimization:** Refactored script print environments to configure `sys.stdout` natively to UTF-8 on Windows, avoiding terminal failures.
-* **Scope Refactoring:** Isolated all testing logic inside clean execution blocks (`if __name__ == "__main__":`) to prevent imports from initiating network calls during test discovery.
-* **Structured Multi-Agent Pipeline:**
-  * **JD Analyzer:** Distills raw text inputs into key requirements.
-  * **Semantic Ranker:** Embeds and index resume text inside **ChromaDB** collections to compute semantic match scores.
-  * **Bias Detector (Ethics Guardrail):** Audits the ranker's logic to flag demographic, gender, age, or educational biases.
-  * **Interview Planner:** Generates customized interview plans based on gaps.
-* **Security & Database Integration:** Parameterized all queries using **SQLModel** ORM to prevent SQL Injection, and secured authentication by storing refresh tokens in `HttpOnly` and `SameSite` cookies.
+To address these technical roadblocks and ensure a production-grade release:
+* **Exponential Backoffs & Fallbacks:** Built custom retry decorators with exponential backoffs to catch 429 exceptions. If a service provider is fully saturated, the client routes queries to a fallback model tier.
+* **Schema Enforcement via Pydantic:** Configured native structured outputs forcing model responses to compile strictly against validation boundaries defined by Pydantic models, preventing runtime crashes.
+* **SQL Transaction Retry & Rollback Wrappers:** Integrated transactional middleware that catches connection errors, performs immediate rollbacks, and schedules sequential retries.
+* **Ephemeral ChromaDB Ingestion Isolation:** Designed dynamic ChromaDB collection allocation mapped directly to distinct `job_session_id` tokens, ensuring total context isolation.
+* **Authentication Safeguards:** Used `HttpOnly` cookie wrappers to secure refresh tokens against XSS, and enabled rate limiters to protect credential endpoints.
 
 ---
 

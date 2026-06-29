@@ -12,25 +12,22 @@ Modern recruitment and job preparation are fragmented. Traditional Applicant Tra
 **What Made Us Build This:** 
 We built **Semmal** to bridge this gap. Our motivation is to help candidates and students understand exactly where they stand relative to real-world job requirements, identify their technical and behavioral skill gaps, and provide them with personalized, AI-driven interview preparation plans to target their desired job roles.
 
----
-
 ### Technical Roadblocks & Challenges Faced
-During development, we faced several technical roadblocks:
-* **Windows Terminal Unicode Crashes:** The setup verification scripts output status emojis (`✅` and `❌`). In Windows environments, standard command prompts and PowerShell defaults run with restrictive local encodings (such as `cp1252`), leading to complete program execution crashes with `UnicodeEncodeError`.
-* **Hanging Test Suites:** Global `pytest` test discovery imported all `test_*.py` files. Because multiple test modules executed database queries, remote Neon API queries, or DuckDuckGo searches directly at the module-level scope (instead of wrapping them in isolated run scopes), pytest would hang indefinitely waiting for network and DB timeouts during discovery.
-* **Nested Git Structures:** The workspace had a sub-directory containing a separate `.git` tracking context, which prevented git from cleanly staging and committing the unified codebase into a single repository.
+During the development and scaling of the multi-agent system, we encountered several advanced architectural challenges:
+* **API Rate Limiting & Concurrency Exhaustion (429 Errors):** When running batch evaluations for multiple candidate resumes concurrently, sequential API calls easily exceeded the provider's RPM (Requests Per Minute) limits, resulting in `429 Too Many Requests` API exceptions and failed evaluations.
+* **Schema Validation & Unstructured LLM Outputs:** Models would occasionally return markdown-wrapped JSON code blocks (e.g. ````json ... ````) or omit required parameters, causing JSON parser failures and application crashes when saving data to PostgreSQL.
+* **Transient Database Connections & Concurrency Collisions:** Concurrently committing evaluation scores and generated interview questions for multiple candidates to our cloud Neon PostgreSQL database frequently caused connection timeouts and transaction collisions.
+* **Vector Isolation & Context Leakage:** Ingesting multiple candidate resumes into a global ChromaDB instance threatened cross-candidate context leakage, where search queries for one job role could retrieve matches from previous sessions.
 
 ---
 
 ### Engineering Solutions & Security Actions
-To resolve these issues and complete the pipeline:
-* **UTF-8 Output Reconfiguration:** We updated the startup script to reconfigure the Python stdout encoding to `utf-8` on initialization, enabling reliable multi-platform rendering of emojis and special characters on Windows.
-* **Refactoring Execution Scopes:** We isolated testing scripts from raw module-level execution to prevent imports from triggering active database calls.
-* **Multi-Agent Orchestration & Security:** 
-  * Implemented a structured four-stage agent pipeline (`JD Extraction -> RAG Matching -> Bias Auditing -> Interview Generation`).
-  * Used `SQLModel` ORM to execute parameterized database transactions, preventing SQL Injection vulnerabilities.
-  * Stored refresh tokens in secure, `HttpOnly` and `SameSite` cookies to neutralize Cross-Site Scripting (XSS) attacks.
-  * Added `slowapi` rate-limiting policies to prevent authentication brute-force attacks.
+To address these technical roadblocks and deliver a secure, production-grade application, we implemented the following strategies:
+* **Resilient API Retries & Fallbacks:** Designed a custom wrapper with exponential backoff and retry decorators to gracefully handle `429` rate limits. If primary model services fail, the system automatically redirects requests to secondary fallback LLM providers.
+* **Strict Structured Outputs via Pydantic:** Leveraged native structured completions utilizing strict Pydantic model definitions. This forces the LLM to output valid, parsed JSON matching our database schemas, throwing safe validation exceptions and default backups rather than runtime crashes.
+* **Database Session Retry & Rollback Wrappers:** Wrapped our SQLAlchemy/SQLModel commits in retry logic. If a connection fails or encounters a transient deadlock, the transaction is rolled back and re-attempted, ensuring transaction integrity.
+* **Dynamic Collection Isolation:** Implemented session-scoped ChromaDB collection instantiation. Each hiring pipeline session generates a isolated collection mapped to the specific `job_session_id`, ensuring candidate data is segregated and context leakage is prevented.
+* **Authentication Safeguards:** Stored JWT refresh tokens in `HttpOnly` and `SameSite` cookies to protect against XSS, and integrated `slowapi` rate limiting on login/register endpoints to mitigate brute-force vectors.
 
 ---
 
