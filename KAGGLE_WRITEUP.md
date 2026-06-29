@@ -1,41 +1,44 @@
 # Title: Semmal (செம்மல்): Semantic Matching & Bias Auditing via Multi-Agent Systems
 ## Subtitle: A Production-Ready Hiring Copilot & Career Mentor Built with Google ADK
 
-## Problem
-Modern hiring is broken. Traditional Applicant Tracking Systems (ATS) rely on brittle keyword matching, often filtering out highly qualified candidates who use different terminology. Furthermore, unconscious bias—whether demographic, educational, or experiential—plagues human recruitment decisions.
+---
 
-## Motivation
-Our goal is to build an intelligent "Hiring Copilot" that leverages the reasoning capabilities of LLMs to *semantically* understand candidates, while simultaneously injecting an autonomous "Auditor" agent to catch AI hallucinations or systemic biases.
+## 📋 Project Summary (STAR Method)
 
-## Architecture
-We designed a Multi-Agent architecture using Google Gemini GenAI SDK and Next.js, consisting of:
-1. **Frontend**: A Framer-Motion powered Next.js dashboard providing real-time execution graphs and drag-and-drop PDF uploading via native multipart/form-data.
-2. **Backend**: FastAPI orchestrating the AI Agents, utilizing `pypdf` for clean, server-side resume extraction.
-3. **Semantic Core**: ChromaDB for local semantic vector storage and retrieval.
-4. **Data Persistence**: SQLModel integration directly connecting to a cloud Neon PostgreSQL database to permanently persist the AI's complex reasoning, scores, and generated interview questions.
+### 1. Situation (Problem & Motivation)
+Modern recruitment and job preparation processes are inefficient and prone to bias. Applicants and students often struggle to understand their technical and soft skill gaps when targeting roles. Meanwhile, recruiter evaluation pipelines rely on rigid keywords, leading to missed opportunities. 
 
-## Innovation
-The core innovation is the **Bias Detector Agent**. Instead of blindly trusting the Semantic Ranker, our system explicitly hands the reasoning to a separate "Critic" agent tasked *only* with finding ethical violations, demographic flags, or unfair reasoning before the human recruiter sees the score.
+We built **Semmal (செம்மல்)** to address this. Our motivation was to create a unified workstation that helps users semantically evaluate their resumes against real job requirements, identify specific skill deficiencies, and generate personalized, actionable preparation pathways to bridge those gaps.
 
-## Technical Design
-The Orchestrator Agent creates an asynchronous pipeline for each candidate:
-`JD Extraction -> RAG Matching -> Bias Auditing -> Interview Generation`. 
-By breaking the monolith into specialized agents, we achieve highly focused, explainable outputs.
+---
 
-## Agent Workflow
-- **JD Analyzer**: Distills raw text into core requirements.
-- **Semantic Ranker**: Explains *why* a candidate fits.
-- **Bias Detector**: Overrides scores if unethical reasoning is found.
-- **Interview Planner**: Outputs custom questions based on the Ranker's identified gaps.
+### 2. Task (Technical Impediments & Goals)
+We aimed to design an asynchronous multi-agent system executing a strict analysis pipeline: `Job Description Extraction -> Vector DB Staging -> Ethics Auditing -> Preparation Generation`.
 
-## Security
-We integrated strict schema validation (Pydantic), PII masking (simulated), and ethical boundary prompting to ensure secure handling of resume data. 
+During development, several critical tasks and system failures had to be resolved:
+* **Unicode Processing Issues:** Scripts crashed with `UnicodeEncodeError` when trying to print output indicators (`✅` / `❌`) on Windows terminals operating under default encodings (like `cp1252`).
+* **Hanging Automated Test Suites:** The pytest discovery suite would hang indefinitely. This occurred because multiple `test_*.py` files executed global database connections and network searches on import rather than isolating them within run scopes.
+* **Workspace Cleanliness:** Nested tracking folders (`.git`) in the repository structure blocked standard unified version control.
 
-## Deployment
-The entire platform is containerized using Docker Compose, allowing one-command deployment (`docker compose up`) of the Vector DB, FastAPI backend, and Next.js frontend.
+---
 
-## Results
-The result is a visually stunning, technically sophisticated platform that proves Agents can be used safely in high-stakes environments like HR.
+### 3. Action (System Design & Implementation)
+To achieve our goals, we implemented the following strategies:
+* **Encoding Optimization:** Refactored script print environments to configure `sys.stdout` natively to UTF-8 on Windows, avoiding terminal failures.
+* **Scope Refactoring:** Isolated all testing logic inside clean execution blocks (`if __name__ == "__main__":`) to prevent imports from initiating network calls during test discovery.
+* **Structured Multi-Agent Pipeline:**
+  * **JD Analyzer:** Distills raw text inputs into key requirements.
+  * **Semantic Ranker:** Embeds and index resume text inside **ChromaDB** collections to compute semantic match scores.
+  * **Bias Detector (Ethics Guardrail):** Audits the ranker's logic to flag demographic, gender, age, or educational biases.
+  * **Interview Planner:** Generates customized interview plans based on gaps.
+* **Security & Database Integration:** Parameterized all queries using **SQLModel** ORM to prevent SQL Injection, and secured authentication by storing refresh tokens in `HttpOnly` and `SameSite` cookies.
 
-## Future Work
-Integration with Model Context Protocol (MCP) to autonomously schedule interviews on Google Calendar and fetch candidate open-source contributions directly from GitHub.
+---
+
+### 4. Result (Final Outcome & Tech Stack)
+We successfully built and deployed a production-ready application. Users can upload resume PDFs, view real-time agent execution outputs, review bias audit logs, and obtain custom-tailored interview plans.
+
+#### Technical Stack Used:
+* **Frontend:** Next.js 14, React, Tailwind CSS, Framer Motion.
+* **Backend:** FastAPI, Google Gemini GenAI SDK, SQLModel, PostgreSQL (Neon), ChromaDB (Vector Search), Slowapi (Rate Limiting).
+* **Containerization:** Docker Compose for single-command deployments.
