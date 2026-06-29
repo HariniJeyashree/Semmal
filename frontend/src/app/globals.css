@@ -1,0 +1,51 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-semmal-black: #0D0604;
+  --color-semmal-black-light: #120807;
+  --color-semmal-maroon: #5C141F;
+  --color-semmal-maroon-dark: #3A0A11;
+  --color-semmal-gold: #D9A646;
+  --color-semmal-gold-light: #F6D88A;
+  --color-semmal-ivory: #F5EFE6;
+  
+  --font-serif: Cambria, Georgia, serif;
+  --font-sans: var(--font-inter, Inter), system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--color-semmal-black);
+  color: var(--color-semmal-ivory);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(217, 166, 70, 0.07) 0%, transparent 60%);
+  animation: pulse-glow 10s ease-in-out infinite alternate;
+  z-index: -1;
+}
+
+@keyframes pulse-glow {
+  0% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.05) translate(1%, 2%);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1) translate(-1%, -1%);
+    opacity: 1;
+  }
+}
+

@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+ENV/
+env/
+packages/
+
+# Python Cache & Build
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Next.js
+.next/
+out/
+
+# Database files
+*.db
+*.db-journal
+*.sqlite3
+
+# Log files
+*.log
+
+# Environment variables & Local Settings
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+
+# Test Outputs
+backend/test_resume.pdf
+backend/test_unicode.pdf
+backend/test_unicode.png
+
+# OS Files
+.DS_Store
+Thumbs.db
