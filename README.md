@@ -4,9 +4,9 @@ An enterprise-grade multi-agent hiring and career preparation workstation that a
 
 ---
 
-## 📋 Project Narrative (STAR Method)
+## 📋 Project Development & Journey
 
-### 1. Situation & Motivation
+### Project Background & Motivation
 Modern recruitment and job preparation are fragmented. Traditional Applicant Tracking Systems (ATS) rely on rigid keyword matching, filtering out qualified candidates or students who lack specific phrasing. Additionally, students often struggle to understand their specific skill gaps when targeting roles, and manual evaluation of resume alignment is highly biased and slow.
 
 **What Made Us Build This:** 
@@ -14,7 +14,7 @@ We built **Semmal** to bridge this gap. Our motivation is to help candidates and
 
 ---
 
-### 2. Task & Challenges Faced
+### Technical Roadblocks & Challenges Faced
 During development, we faced several technical roadblocks:
 * **Windows Terminal Unicode Crashes:** The setup verification scripts output status emojis (`✅` and `❌`). In Windows environments, standard command prompts and PowerShell defaults run with restrictive local encodings (such as `cp1252`), leading to complete program execution crashes with `UnicodeEncodeError`.
 * **Hanging Test Suites:** Global `pytest` test discovery imported all `test_*.py` files. Because multiple test modules executed database queries, remote Neon API queries, or DuckDuckGo searches directly at the module-level scope (instead of wrapping them in isolated run scopes), pytest would hang indefinitely waiting for network and DB timeouts during discovery.
@@ -22,7 +22,7 @@ During development, we faced several technical roadblocks:
 
 ---
 
-### 3. Action taken
+### Engineering Solutions & Security Actions
 To resolve these issues and complete the pipeline:
 * **UTF-8 Output Reconfiguration:** We updated the startup script to reconfigure the Python stdout encoding to `utf-8` on initialization, enabling reliable multi-platform rendering of emojis and special characters on Windows.
 * **Refactoring Execution Scopes:** We isolated testing scripts from raw module-level execution to prevent imports from triggering active database calls.
@@ -34,7 +34,7 @@ To resolve these issues and complete the pipeline:
 
 ---
 
-### 4. Result & Tech Stack
+### Project Deliverables & Outcomes
 The final result is a responsive, highly secure web application containing a complete recruitment workstation. 
 
 #### 🛠️ Tech Stack

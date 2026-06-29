@@ -3,16 +3,16 @@
 
 ---
 
-## 📋 Project Summary (STAR Method)
+## 📋 Project Architecture & Implementation
 
-### 1. Situation (Problem & Motivation)
+### Core Problem & Motivation
 Modern recruitment and job preparation processes are inefficient and prone to bias. Applicants and students often struggle to understand their technical and soft skill gaps when targeting roles. Meanwhile, recruiter evaluation pipelines rely on rigid keywords, leading to missed opportunities. 
 
 We built **Semmal (செம்மல்)** to address this. Our motivation was to create a unified workstation that helps users semantically evaluate their resumes against real job requirements, identify specific skill deficiencies, and generate personalized, actionable preparation pathways to bridge those gaps.
 
 ---
 
-### 2. Task (Technical Impediments & Goals)
+### Technical Hurdles & Goals
 We aimed to design an asynchronous multi-agent system executing a strict analysis pipeline: `Job Description Extraction -> Vector DB Staging -> Ethics Auditing -> Preparation Generation`.
 
 During development, several critical tasks and system failures had to be resolved:
@@ -22,7 +22,7 @@ During development, several critical tasks and system failures had to be resolve
 
 ---
 
-### 3. Action (System Design & Implementation)
+### System Design & Implementation
 To achieve our goals, we implemented the following strategies:
 * **Encoding Optimization:** Refactored script print environments to configure `sys.stdout` natively to UTF-8 on Windows, avoiding terminal failures.
 * **Scope Refactoring:** Isolated all testing logic inside clean execution blocks (`if __name__ == "__main__":`) to prevent imports from initiating network calls during test discovery.
@@ -35,7 +35,7 @@ To achieve our goals, we implemented the following strategies:
 
 ---
 
-### 4. Result (Final Outcome & Tech Stack)
+### Final Outcomes & Architecture
 We successfully built and deployed a production-ready application. Users can upload resume PDFs, view real-time agent execution outputs, review bias audit logs, and obtain custom-tailored interview plans.
 
 #### Technical Stack Used:
