@@ -1,3 +1,11 @@
+---
+title: Semmal Career Mentor
+emoji: 🚀
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+---
 # Semmal (செம்மல்): Multi-Agent Skill-Gap Analysis & Career Preparation Copilot
 
 An enterprise-grade multi-agent career preparation workstation that helps candidates analyze job descriptions, semantically identify their skill gaps against requirements, audit evaluation reasoning for bias, and generate customized technical and behavioral interview preparation guides.
