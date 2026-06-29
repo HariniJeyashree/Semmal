@@ -49,7 +49,8 @@ export default function Dashboard() {
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+        const host = typeof window !== "undefined" ? window.location.origin : "http://localhost:8000";
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || host + "/api/v1";
         const baseUrl = apiUrl.replace(/\/api\/v1(\/analyze)?\/?$/, "");
         const res = await fetch(`${baseUrl}/health`);
         setIsBackendHealthy(res.ok);
