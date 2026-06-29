@@ -1,5 +1,5 @@
-# Title: AI Recruiter: Semantic Matching & Bias Auditing via Multi-Agent Systems
-## Subtitle: A Production-Ready Hiring Copilot Built with Google ADK
+# Title: Semmal (செம்மல்): Semantic Matching & Bias Auditing via Multi-Agent Systems
+## Subtitle: A Production-Ready Hiring Copilot & Career Mentor Built with Google ADK
 
 ## Problem
 Modern hiring is broken. Traditional Applicant Tracking Systems (ATS) rely on brittle keyword matching, often filtering out highly qualified candidates who use different terminology. Furthermore, unconscious bias—whether demographic, educational, or experiential—plagues human recruitment decisions.
