@@ -1,7 +1,8 @@
 import axios from "axios";
 
+const host = typeof window !== "undefined" ? window.location.origin : "http://localhost:8000";
 export const api = axios.create({
-  baseURL: (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1").replace(/\/analyze\/?$/, ""),
+  baseURL: (process.env.NEXT_PUBLIC_API_URL || host + "/api/v1").replace(/\/analyze\/?$/, ""),
   withCredentials: true, // Needed to send and receive HttpOnly cookies for refresh token
 });
 
