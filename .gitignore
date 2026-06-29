@@ -45,3 +45,6 @@ backend/test_unicode.png
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Kaggle Writeup (Local Only)
+KAGGLE_WRITEUP.md
