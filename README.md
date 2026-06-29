@@ -1,4 +1,4 @@
-# Semmal: Multi-Agent Hiring & Skill-Gap Analysis Copilot
+# Semmal (செம்மல்): Multi-Agent Hiring & Skill-Gap Analysis Copilot
 
 An enterprise-grade multi-agent hiring and career preparation workstation that analyzes job descriptions, semantically ranks resumes, audits evaluations for biases, and generates customized technical and behavioral interview preparation guides.
 
